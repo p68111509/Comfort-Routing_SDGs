@@ -151,10 +151,9 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-col1, col2, col3, col4 = st.columns([6, 0.5, 6, 1])
+col1, col2, col3, col4 = st.columns([6, 0.5, 6, 0.5])
 
 with col1:
-    # 標題
     st.markdown("""
         <h1 style="
             font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
@@ -167,19 +166,26 @@ with col1:
             line-height: 1.2;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         ">
-            Geo-AI 路徑好空氣<br>
+            Geo-AI Comfort Routing System<br>
             <span style="
                 font-size: 16px;
                 font-weight: 500;
                 color: #666666;
             ">
-                台北市 & 新北市
+                Taichung City
             </span>
         </h1>
     """, unsafe_allow_html=True)
+    # with col_gemini:
+    #     # if "set_start_address" in st.session_state:
+    #     #     st.session_state.start_address = st.session_state.pop("set_start_address")
+    #     gemini_sentense = st.text_input(label="", placeholder="跟 Gemini 說點什麼", key="Gemini")
+
+
 
     if "transport_mode" not in st.session_state:
-        st.session_state.transport_mode = "機車"
+        selected_mode = "Scooter"
+        st.session_state.transport_mode = "Scooter"
 
     G = load_graph()
     if "points" not in st.session_state: st.session_state.points = []
@@ -199,20 +205,20 @@ with col1:
     with row1[0]:
         if "set_start_address" in st.session_state:
             st.session_state.start_address = st.session_state.pop("set_start_address")
-        start_address = st.text_input(label="", placeholder="🟢起點地址", key="start_address")
+        start_address = st.text_input(label="", placeholder="🟢Origin location/address", key="start_address")
     with row1[1]:
         if "set_end_address" in st.session_state:
             st.session_state.end_address = st.session_state.pop("set_end_address")
-        end_address = st.text_input(label="", placeholder="🔴終點地址", key="end_address")
+        end_address = st.text_input(label="", placeholder="🔴Destination location/address", key="end_address")
 
     ###### 權重調整
     row4 = st.columns([1,1,1])
     with row4[0]:
-        pm25_weight = st.slider("PM2.5 權重 (%)", 0, 100, 50, step=10, key="pm25_weight")
+        pm25_weight = st.slider("PM₂.₅ Weight (%)", 0, 100, 50, step=10, key="pm25_weight")
     with row4[1]:
-        no2_weight = st.slider("NO₂ 權重 (%)", 0, 100, 30, step=10, key="no2_weight")
+        no2_weight = st.slider("NO₂ Weight (%)", 0, 100, 30, step=10, key="no2_weight")
     with row4[2]:
-        WBGT_weight = st.slider("溫度 權重 (%)", 0, 100, 80, step=10, key="WBGT_weight")
+        WBGT_weight = st.slider("Temp. Weight (%)", 0, 100, 80, step=10, key="WBGT_weight")
 
 
 
@@ -234,7 +240,7 @@ with col1:
             margin-top: 14px;
         }
         </style>
-        <div class="select-label-box">交通方式</div>
+        <div class="select-label-box">Transportation</div>
         """, unsafe_allow_html=True)
 
     with row2[1]:
@@ -248,9 +254,9 @@ with col1:
         """, unsafe_allow_html=True)
 
         selected_mode = st.selectbox(
-            label="交通方式",
-            options=["機車", "單車", "步行"],
-            index=["機車", "單車", "步行"].index(st.session_state.get("transport_mode", "機車")),
+            label="Transportation",
+            options=["Scooter", "Bike", "Walk"],
+            index=["Scooter", "Bike", "Walk"].index(st.session_state.get("transport_mode", "Scooter")),
             label_visibility="collapsed",
         )
         st.session_state.transport_mode = selected_mode
@@ -285,36 +291,36 @@ with col1:
         st.markdown("""
             <style>
             /* 根據按鈕文字選取目標按鈕 */
-            button:has(> div:contains("🧭 路徑解算")) {
+            button:has(> div:contains("🧭 Calculate Route")) {
                 margin-top: 20px;
             }
             </style>
         """, unsafe_allow_html=True)
-        if st.button("🧭 路徑解算", disabled=st.session_state.disable_inputs):
+        if st.button("🧭 Calculate Route", disabled=st.session_state.disable_inputs):
             if not start_address.strip():
-                st.warning("⚠️ 請輸入起點地址")
+                st.warning("⚠️ Please enter the starting address")
             elif not end_address.strip():
-                st.warning("⚠️ 請輸入終點地址")
+                st.warning("⚠️ Please enter the destination address")
             else:
                 # 起點處理
                 start_result = geocode(start_address)
                 if not start_result:
-                    st.warning("⚠️ 起點地址查詢失敗")
+                    st.warning("⚠️ Start address query failed")
                 else:
                     start_lat, start_lon = start_result
                     start_node = find_nearest_node(G, start_lat, start_lon)
                     if not start_node:
-                        st.warning("⚠️ 起點離路網太遠")
+                        st.warning("⚠️ The starting point is too far from the road network")
                     else:
                         # 終點處理
                         end_result = geocode(end_address)
                         if not end_result:
-                            st.warning("⚠️ 終點地址查詢失敗")
+                            st.warning("⚠️ Destination address query failed")
                         else:
                             end_lat, end_lon = end_result
                             end_node = find_nearest_node(G, end_lat, end_lon)
                             if not end_node:
-                                st.warning("⚠️ 終點離路網太遠")
+                                st.warning("⚠️ The destination is too far from the road network")
                             else:
                                 # 一切成功，儲存節點與位置
                                 st.session_state.points = [
@@ -331,12 +337,12 @@ with col1:
         st.markdown("""
             <style>
             /* 根據按鈕文字選取目標按鈕 */
-            button:has(> div:contains("清空選擇")) {
+            button:has(> div:contains("Clear Selection")) {
                 margin-top: 20px;
             }
             </style>
         """, unsafe_allow_html=True)
-        if st.button("🔃 清空選擇"):
+        if st.button("🔃 Clear Selection"):
             st.session_state.points = []
             st.session_state.nodes = []
             st.session_state.disable_inputs = False  # ✅ 解鎖功能
@@ -345,7 +351,7 @@ with col1:
 
     # 統計表格          
     transport_mode = st.session_state.transport_mode
-    SPEED = {"機車": 45, "單車": 18, "步行": 5}[transport_mode]
+    SPEED = {"Scooter": 45, "Bike": 18, "Walk": 5}[transport_mode]
 
     if st.session_state.has_routed and len(st.session_state.nodes) == 2:
         total = pm25_weight + no2_weight + WBGT_weight
@@ -362,7 +368,7 @@ with col1:
         path2, dist2, PM25_acc2, NO2_acc2, WBGT_acc2 = compute_path(G, *st.session_state.nodes, weights)
 
         if path1 is None or path2 is None:
-            st.error("⚠️ 找不到可行路徑，請重新設定起點與終點。")
+            st.error("⚠️ No feasible path found, please reset the start and end points")
             st.stop()
 
         dist_km1, dist_km2 = dist1 / 1000, dist2 / 1000
@@ -380,18 +386,18 @@ with col1:
         # 變化率 (%)：以累積值為基礎（最低暴露路徑相較最短路徑）
         improve_pm25 = (PM25_acc2 - PM25_acc1) / PM25_acc1 * 100 if PM25_acc1 else 0
         improve_no2 = (NO2_acc2 - NO2_acc1) / NO2_acc1 * 100 if NO2_acc1 else 0
-        improve_wbgt = (WBGT_acc2 - WBGT_acc1) / WBGT_acc1 * 100 if WBGT_acc1 else 0
-        improve_time = (time_min2 - time_min1) / time_min1 * 100 if time_min1 else 0
+        improve_wbgt = rate_wbgt_2 - rate_wbgt_1 if WBGT_acc1 else 0
+        improve_time = time_min2 - time_min1
 
         df = pd.DataFrame({
-            "時間/平均暴露": ["預估時間", "PM₂․₅", "NO₂", "氣溫"],
-            "🟦最短路徑": [round(time_min1, 2), round(rate_pm25_1, 2), round(rate_no2_1, 2), round(rate_wbgt_1, 2)],
-            "🟩舒適路徑": [round(time_min2, 2), round(rate_pm25_2, 2), round(rate_no2_2, 2), round(rate_wbgt_2, 2)],
-            "變化率": [
-                f"{round(improve_time, 1)}%",
-                f"{round(improve_pm25, 1)}%",
-                f"{round(improve_no2, 1)}%",
-                f"{round(improve_wbgt, 1)}%"
+            "Time/Avg. Exposure": ["Est. Time", "PM₂․₅", "NO₂", "Temp."],
+            "🟦Shortest Path": [round(time_min1, 2), round(rate_pm25_1, 2), round(rate_no2_1, 2), round(rate_wbgt_1, 2)],
+            "🟩Comfort Path": [round(time_min2, 2), round(rate_pm25_2, 2), round(rate_no2_2, 2), round(rate_wbgt_2, 2)],
+            "Relative Change": [
+                f"{round(improve_time, 2)} min",
+                f"{round(improve_pm25, 2)} %",
+                f"{round(improve_no2, 2)} %",
+                f"{round(improve_wbgt, 2)} °C"
             ]
         })
 
@@ -458,8 +464,8 @@ with col1:
                 margin-top: 6px;
                 text-align: center;
             '>
-                表格數值為每公尺通勤距離下的平均暴露濃度<br>
-                單位分別為 分鐘 (時間)、μg/m³（PM₂․₅）、ppb（NO₂）與 °C（氣溫）
+                The values ​​in the table are the average exposure concentration per meter of commuting distance<br>
+                The units are minutes (time), μg/m³ (PM₂․₅), ppb (NO₂) and °C (temperature)
             </div>
         """, unsafe_allow_html=True)
 
@@ -495,10 +501,11 @@ with col3:
                 color: #444444;
                 line-height: 1.6;
             ">
-            🟢 輸入起點與終點地址（或點選地圖設定起終點）<br>
-            🚘 選擇交通方式：機車、單車或步行<br>
-            🧭 點選「路徑解算」：計算兩種路徑（最短/最低暴露），顯示統計表格<br>
-            ✅ 點選「空汙疊圖」可查看PM2.5濃度背景圖層
+            🟢 Enter start and end addresses (or click on the map to set points)<br>
+            🚘 Choose a transport mode: scooter, bicycle, or walking<br>
+            🎚️ Adjust weights for PM₂.₅, NO₂, and temperature to customize the comfort route<br>
+            🧭 Click "Route Planning" to compute both paths (Shortest/Lowest Exposure) and view the summary table<br>
+            ✅ Click "Pollution Overlay" to display the PM2.5 concentration background layer
             </div>
         """, unsafe_allow_html=True)
 
@@ -540,21 +547,21 @@ with col3:
 
             # 加上標題「圖層」
             st.markdown("""
-                <div class="select-label-box">疊加圖層</div>
+                <div class="select-label-box">Overlay</div>
             """, unsafe_allow_html=True)
 
             # radio 元件（不顯示 label）
             st.markdown('<div class="overlay-radio">', unsafe_allow_html=True)
             overlay_option = st.radio(
                 label="",
-                options=["無", "PM₂.₅", "NO₂", "氣溫"],
+                options=["None", "PM₂.₅", "NO₂", "Temp."],
                 index=0,
                 key="active_overlay_radio"
             )
             st.markdown('</div>', unsafe_allow_html=True)
 
         # 更新 session_state 對應疊圖層狀態
-        if overlay_option == "無":
+        if overlay_option == "None":
             st.session_state.pop("active_overlay", None)
         else:
             st.session_state.active_overlay = overlay_option
@@ -597,8 +604,8 @@ with col3:
         # 圖例：不可點擊的樣式展示（縮小空白）
         st.markdown("""
             <div class="legend-wrapper">
-                <div class="legend-label">🟦<br>最短路徑</div>
-                <div class="legend-label">🟩<br>舒適路徑</div>
+                <div class="legend-label">🟦<br>Shortest Path</div>
+                <div class="legend-label">🟩<br>Comfort Path</div>
             </div>
         """, unsafe_allow_html=True)
 
@@ -618,7 +625,7 @@ with col3:
 
         if st.session_state.has_routed and len(st.session_state.nodes) == 2:
             for path, color, label in [
-                (compute_path(G, *st.session_state.nodes, "length")[0], "blue", "最短路徑"),
+                (compute_path(G, *st.session_state.nodes, "length")[0], "blue", "Shortest Path"),
                 (compute_path(G, *st.session_state.nodes, weights)[0], "#00d26a", "最低暴露路徑")
             ]:
                 for u, v in zip(path[:-1], path[1:]):
@@ -657,7 +664,7 @@ with col3:
                     "top": 2919204.773102
                 }
             },
-            "WBGT": {
+            "Temp.": {
                 "path": "data/WBGT_全台.png",
                 "bounds_twd97": {
                     "left": 147522.218800,
@@ -670,11 +677,11 @@ with col3:
 
         # 更新狀態
         if st.session_state.get("active_overlay") == "PM2.5":
-            st.session_state.active_overlay = "PM2.5"
+            st.session_state.active_overlay = "PM₂.₅"
         if st.session_state.get("active_overlay") == "NO2":
             st.session_state.active_overlay = "NO₂"
-        if st.session_state.get("active_overlay") == "WBGT":
-            st.session_state.active_overlay = "WBGT"
+        if st.session_state.get("active_overlay") == "Temp.":
+            st.session_state.active_overlay = "Temp."
 
         # 顯示對應疊圖層
         if "active_overlay" in st.session_state:
@@ -702,7 +709,7 @@ with col3:
                 ).add_to(m)
 
 
-        st_data = st_folium(m, width=600, height=650)
+        st_data = st_folium(m, width=600, height=600)
 
         if not st.session_state.disable_inputs and st_data and st_data.get("last_clicked"):
             latlon = [st_data["last_clicked"]["lat"], st_data["last_clicked"]["lng"]]
@@ -742,8 +749,8 @@ st.markdown(f"""
 
     <div style="text-align: center; font-size: 13px; color: #666; font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;">
         <p style="margin-bottom: 4px;">
-            © 2025 許家瑋 林祐如｜國立成功大學 測量及空間資訊學系｜指導老師：吳治達 教授<br>
-            聯絡信箱：<a href="mailto:p68111509@gs.ncku.edu.tw">p68111509@gs.ncku.edu.tw</a>｜GitHub 專案：<a href="https://github.com/p68111509/low-exposure-routing_demo" target="_blank">low-exposure-routing_demo</a>
+            © 2025 許家瑋 林侑萱 林祐如｜國立成功大學 測量及空間資訊學系｜指導老師：吳治達 教授<br>
+            e-mail：<a href="mailto:p68111509@gs.ncku.edu.tw">p68111509@gs.ncku.edu.tw</a>｜GitHub：<a href="https://github.com/p68111509/Health-routing_Taichung" target="_blank">Health-routing_Taichung</a>
         </p>
         <p style="margin-top: 6px; margin-bottom: 10px;">
             部分空氣汙染空間資訊參考自環境部公開資料
