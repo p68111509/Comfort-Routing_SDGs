@@ -180,6 +180,45 @@ with col1:
     #     # if "set_start_address" in st.session_state:
     #     #     st.session_state.start_address = st.session_state.pop("set_start_address")
     #     gemini_sentense = st.text_input(label="", placeholder="跟 Gemini 說點什麼", key="Gemini")
+    
+    
+    # 操作說明
+    st.markdown("""
+    <style>
+    /* expander 整體外框（包含標題區） */
+    div.streamlit-expander {
+        background-color: #cccccc !important;  /* ✅ 改成你想要的底色 */
+        border-radius: 10px !important;
+    }
+
+    /* expander 標題列 */
+    div.streamlit-expanderHeader {
+        font-size: 20px;
+        font-weight: 700;
+        color: black;
+        text-align: center;
+        font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    with st.expander("🛠️ 操作說明"):
+        st.markdown("""
+            <div style="
+                background-color: #eeeeee;
+                padding: 16px;
+                border-radius: 10px;
+                font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+                font-size: 16px;
+                color: #444444;
+                line-height: 1.6;
+            ">
+            🟢 Enter start and end addresses (or click on the map to set points)<br>
+            🚘 Choose a transport mode: scooter, bicycle, or walking<br>
+            🎚️ Adjust weights for PM₂.₅, NO₂, and temperature to customize the comfort route<br>
+            🧭 Click "Route Planning" to compute both paths (Shortest/Lowest Exposure) and view the summary table<br>
+            ✅ Click "Pollution Overlay" to display the PM2.5 concentration background layer
+            </div>
+        """, unsafe_allow_html=True)
 
 
 
@@ -471,44 +510,6 @@ with col1:
 
 
 with col3:
-    # 操作說明
-    st.markdown("""
-    <style>
-    /* expander 整體外框（包含標題區） */
-    div.streamlit-expander {
-        background-color: #cccccc !important;  /* ✅ 改成你想要的底色 */
-        border-radius: 10px !important;
-    }
-
-    /* expander 標題列 */
-    div.streamlit-expanderHeader {
-        font-size: 20px;
-        font-weight: 700;
-        color: black;
-        text-align: center;
-        font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    with st.expander("🛠️ 操作說明"):
-        st.markdown("""
-            <div style="
-                background-color: #eeeeee;
-                padding: 16px;
-                border-radius: 10px;
-                font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-                font-size: 16px;
-                color: #444444;
-                line-height: 1.6;
-            ">
-            🟢 Enter start and end addresses (or click on the map to set points)<br>
-            🚘 Choose a transport mode: scooter, bicycle, or walking<br>
-            🎚️ Adjust weights for PM₂.₅, NO₂, and temperature to customize the comfort route<br>
-            🧭 Click "Route Planning" to compute both paths (Shortest/Lowest Exposure) and view the summary table<br>
-            ✅ Click "Pollution Overlay" to display the PM2.5 concentration background layer
-            </div>
-        """, unsafe_allow_html=True)
-
     map_row = st.columns([2, 9])
     
     with map_row[0]:
