@@ -151,35 +151,38 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+
+st.markdown("""
+    <h1 style="
+        font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        color: black;
+        text-align: center;
+        margin-bottom: 0px;
+        line-height: 1.2;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    ">
+        Geo-AI Comfort Routing System<br>
+        <span style="
+            font-size: 16px;
+            font-weight: 500;
+            color: #666666;
+        ">
+            Taipei City & New Taipei City
+        </span>
+    </h1>
+""", unsafe_allow_html=True)
+# with col_gemini:
+#     # if "set_start_address" in st.session_state:
+#     #     st.session_state.start_address = st.session_state.pop("set_start_address")
+#     gemini_sentense = st.text_input(label="", placeholder="跟 Gemini 說點什麼", key="Gemini")
+
+
 col1, col2, col3, col4 = st.columns([6, 0.5, 6, 0.5])
 
 with col1:
-    st.markdown("""
-        <h1 style="
-            font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-            font-size: 32px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            color: black;
-            text-align: center;
-            margin-bottom: 0px;
-            line-height: 1.2;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        ">
-            Geo-AI Comfort Routing System<br>
-            <span style="
-                font-size: 16px;
-                font-weight: 500;
-                color: #666666;
-            ">
-                Taipei City & New Taipei City
-            </span>
-        </h1>
-    """, unsafe_allow_html=True)
-    # with col_gemini:
-    #     # if "set_start_address" in st.session_state:
-    #     #     st.session_state.start_address = st.session_state.pop("set_start_address")
-    #     gemini_sentense = st.text_input(label="", placeholder="跟 Gemini 說點什麼", key="Gemini")
     
     
     # 操作說明
@@ -201,7 +204,7 @@ with col1:
     }
     </style>
     """, unsafe_allow_html=True)
-    with st.expander("🛠️ 操作說明"):
+    with st.expander("🛠️ Instructions"):
         st.markdown("""
             <div style="
                 background-color: #eeeeee;
